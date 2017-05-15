@@ -1,5 +1,31 @@
 Cheat sheet for GDAL/OGR command-line geodata tools
 
+
+Batch processing
+---
+Process all vector or raster files in a directory with xargs and by 4 kernels (-P 4):
+
+general use:
+
+	ls -1 *.tif | tr '\n' '\0' | tr -d ".tif" | xargs -0 -n 1 -P 4 -I {} GDALCOMMAND {}.tif {}_outputExtension.tif
+
+
+Example for tif files:
+	
+	ls -1 *.tif | tr '\n' '\0' | tr -d ".tif" | xargs -0 -n 1 -P 4 -I {} gdalinfo {}.tif
+	
+	ls -1 *.tif | tr '\n' '\0' | tr -d ".tif" | xargs -0 -n 1 -P 4 -I {} gdalwarp -s_srs EPSG:3035 -t_srs EPSG:3857 -r average {}.tif {}_output.tif
+
+
+Example for shapefiles:
+
+	ls -1 *.shp | rev | cut -c 5- | rev | tr '\n' '\0' | xargs -0 -n 1 -P 4 -I {} ogrinfo {}.shp
+
+	ls -1 *.shp | rev | cut -c 5- | rev | tr '\n' '\0' | xargs -0 -n 1 -P 4 -I {} ogr2ogr -clipsrc clipping_polygon.shp {}_clip.shp {}.shp
+
+	
+
+
 Vector operations
 ---
 
